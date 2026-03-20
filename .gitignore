@@ -3,3 +3,87 @@
 /order-service/target/
 /payment-service/target/
 /stock-service/target/
+
+# ==================== Maven ====================
+target/
+**/target/
+*.jar
+*.war
+*.ear
+*.zip
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# ==================== IDE & Editor ====================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# ==================== Java & Compilation ====================
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+*.rar
+*.tar.gz
+
+# ==================== OS ====================
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+*.exe
+
+# ==================== Database ====================
+*.db
+*.sqlite
+*.h2.db
+*.mv.db
+*.trace.db
+
+# ==================== Logs & Temp ====================
+logs/
+*.log.*
+spring.log
+application.log
+*.pid
+temp/
+tmp/
+*.tmp
+
+# ==================== Environment & Configuration ====================
+.env
+.env.local
+.env.*.local
+application-local.yml
+application-dev.yml
+secrets.yml
+
+# ==================== Docker ====================
+docker-compose.override.yml
+
+# ==================== Build Output ====================
+dist/
+build/
+out/
+
+# ==================== Cache & Dependencies ====================
+.cache/
+.m2/
+.npm/
+node_modules/
