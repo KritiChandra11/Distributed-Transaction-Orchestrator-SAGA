@@ -18,14 +18,10 @@ import org.springframework.kafka.support.serializer.JsonSerde;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import pl.piomin.base.domain.Order;
-import pl.piomin.order.controller.OrderController;
-import pl.piomin.order.service.OrderGeneratorService;
 import pl.piomin.order.service.OrderManageService;
 
 import java.time.Duration;
-import java.util.Random;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
 @EnableKafkaStreams
@@ -68,14 +64,16 @@ public class OrderApp {
     @Bean
     public KStream<Long, Order> stream(StreamsBuilder builder) {
         JsonSerde<Order> orderSerde = new JsonSerde<>(Order.class);
+
         KStream<Long, Order> stream = builder
                 .stream("payment-orders", Consumed.with(Serdes.Long(), orderSerde));
 
         stream.join(
                         builder.stream("stock-orders"),
                         orderManageService::confirm,
-                        JoinWindows.of(Duration.ofSeconds(10)),
-                        StreamJoined.with(Serdes.Long(), orderSerde, orderSerde))
+                        JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofSeconds(10)), // ✅ FIXED
+                        StreamJoined.with(Serdes.Long(), orderSerde, orderSerde)
+                )
                 .peek((k, o) -> LOG.info("Output: {}", o))
                 .to("orders");
 
@@ -86,12 +84,17 @@ public class OrderApp {
     public KTable<Long, Order> table(StreamsBuilder builder) {
         KeyValueBytesStoreSupplier store =
                 Stores.persistentKeyValueStore("orders");
+
         JsonSerde<Order> orderSerde = new JsonSerde<>(Order.class);
+
         KStream<Long, Order> stream = builder
                 .stream("orders", Consumed.with(Serdes.Long(), orderSerde));
-        return stream.toTable(Materialized.<Long, Order>as(store)
-                .withKeySerde(Serdes.Long())
-                .withValueSerde(orderSerde));
+
+        return stream.toTable(
+                Materialized.<Long, Order>as(store)
+                        .withKeySerde(Serdes.Long())
+                        .withValueSerde(orderSerde)
+        );
     }
 
     @Bean

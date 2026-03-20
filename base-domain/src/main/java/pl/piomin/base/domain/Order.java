@@ -1,6 +1,7 @@
 package pl.piomin.base.domain;
 
 public class Order {
+
     private Long id;
     private Long customerId;
     private Long productId;
@@ -9,6 +10,13 @@ public class Order {
     private String status;
     private String source;
 
+    // ✅ Constants to avoid magic strings
+    public static final String NEW = "NEW";
+    public static final String ACCEPT = "ACCEPT";
+    public static final String REJECT = "REJECT";
+    public static final String CONFIRMED = "CONFIRMED";
+    public static final String ROLLBACK = "ROLLBACK";
+
     public Order() {
     }
 
@@ -16,7 +24,7 @@ public class Order {
         this.id = id;
         this.customerId = customerId;
         this.productId = productId;
-        this.status = status;
+        this.status = normalize(status);
     }
 
     public Order(Long id, Long customerId, Long productId, int productCount, int price) {
@@ -25,7 +33,7 @@ public class Order {
         this.productId = productId;
         this.productCount = productCount;
         this.price = price;
-        this.status = "NEW";
+        this.status = NEW; // ✅ fixed
     }
 
     public Long getId() {
@@ -56,8 +64,13 @@ public class Order {
         return status;
     }
 
+    // ✅ Safe setter with validation
     public void setStatus(String status) {
-        this.status = status;
+        String normalized = normalize(status);
+        if (!isValidStatus(normalized)) {
+            throw new IllegalArgumentException("Invalid status: " + status);
+        }
+        this.status = normalized;
     }
 
     public String getSource() {
@@ -82,6 +95,20 @@ public class Order {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    // ✅ Normalize input (important for Kafka / APIs)
+    private String normalize(String status) {
+        return status == null ? null : status.toUpperCase();
+    }
+
+    // ✅ Validation logic
+    private boolean isValidStatus(String status) {
+        return NEW.equals(status) ||
+               ACCEPT.equals(status) ||
+               REJECT.equals(status) ||
+               CONFIRMED.equals(status) ||
+               ROLLBACK.equals(status);
     }
 
     @Override

@@ -1,40 +1,25 @@
-version: "3.8"
-services:
-  broker:
-    platform: linux/amd64
-    image: moeenz/docker-kafka-kraft:latest
-    restart: always
-    container_name: broker
-    ports:
-      - "9092:9092"
-    environment:
-      KRAFT_CONTAINER_HOST_NAME: broker
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
-    networks:
-      - kafka-net
+spring:
+  application:
+    name: orders
 
-  payment-service:
-    image: sample-spring-kafka-microservices/payment-service:1.0-SNAPSHOT
-    depends_on:
-      - broker
-    links:
-      - broker
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    networks:
-      - kafka-net
+  kafka:
+    bootstrap-servers: localhost:9092   # ✅ THIS IS THE FIX
 
-  stock-service:
-    image: sample-spring-kafka-microservices/stock-service:1.0-SNAPSHOT
-    depends_on:
-      - broker
-    links:
-      - broker
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    networks:
-      - kafka-net
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-networks:
-  kafka-net:
+    streams:
+      application-id: order-service
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$LongSerde
+        default.value.serde: org.springframework.kafka.support.serializer.JsonSerde
+        spring.json.trusted.packages: "*"
+      state-dir: /tmp/kafka-streams/
+
+server:
+  port: 8081
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss.SSS} --- [%15.15t] : %m%n"

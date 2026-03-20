@@ -9,7 +9,7 @@ services:
     environment:
       KRAFT_CONTAINER_HOST_NAME: broker
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
     networks:
       - kafka-net
 
