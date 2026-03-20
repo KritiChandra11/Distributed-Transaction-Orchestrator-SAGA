@@ -139,8 +139,8 @@ Distributed-Transaction-Orchestrator-SAGA/
 
 **Step 1: Clone the Repository**
 ```bash
-git clone https://github.com/KritiChandra11/Distributed-Transaction-Orchestrator-SAGA-.git
-cd Distributed-Transaction-Orchestrator-SAGA-
+git clone https://github.com/KritiChandra11/Distributed-Transaction-Orchestrator-SAGA.git
+cd Distributed-Transaction-Orchestrator-SAGA
 ```
 
 **Step 2: Start Kafka Broker (Docker)**
@@ -151,7 +151,7 @@ Start-Sleep -Seconds 3
 
 **Step 3: Build the Project**
 ```powershell
-cd "C:\path\to\Distributed-Transaction-Orchestrator-SAGA-"
+cd "C:\path\to\Distributed-Transaction-Orchestrator-SAGA"
 mvn clean install -DskipTests -q
 ```
 
